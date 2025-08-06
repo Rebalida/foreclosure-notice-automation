@@ -31,4 +31,4 @@ if not SHEET_ID:
 # The ID of the calendar where events will be created.
 # For your primary calendar, this is usually your email address.
 # For a secondary calendar, find it in the calendar's settings.
-CALENDAR_ID = os.getenv('GOOGLE_CALENDAR_ID', 'primary')
+CALENDAR_ID = os.getenv('CALENDAR_ID', 'primary')
