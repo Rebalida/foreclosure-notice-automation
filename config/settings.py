@@ -17,7 +17,7 @@ SCOPES = [
 # This query tells Gmail which emails to fetch.
 # Customize this to match your foreclosure notice emails.
 # Example: 'from:notifications@foreclosureservice.com subject:"New Foreclosure Notice" is:unread'
-GMAIL_QUERY = os.getenv('GMAIL_QUERY', 'subject:"Foreclosure Notice"')
+GMAIL_QUERY = os.getenv('GMAIL_SEARCH_QUERY', 'subject:"Foreclosure Notice"')
 
 # --- Google Sheets Configuration ---
 # The ID of the spreadsheet where data will be stored.

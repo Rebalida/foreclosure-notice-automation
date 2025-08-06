@@ -46,7 +46,7 @@ class DataParser:
             'property_address': re.compile(r"Property Address:\s*(.*)"),
             'auction_date': re.compile(r"Auction Date:\s*(\w+\s+\d{1,2},\s+\d{4})"),
             'auction_time': re.compile(r"Auction Time:\s*(\d{1,2}:\d{2}\s*(?:AM|PM))"),
-            'case_number': re.compile(r"Case No\.:\s*(\d{4}-\d{6})"),
+            'case_number': re.compile(r"Case (?:No\.?|Number):\s*(\d{4}-\d{5,6})"),
             'attorney_name': re.compile(r"Attorney for Plaintiff:\s*(.*)"),
             'attorney_phone': re.compile(r"Attorney Phone:\s*(\(\d{3}\)\s*\d{3}-\d{4})"),
             'original_loan_amount': re.compile(r"Original Loan Amount:\s*\$([\d,]+\.\d{2})"),

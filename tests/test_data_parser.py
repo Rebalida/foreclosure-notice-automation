@@ -10,10 +10,10 @@ Hello,
 
 This is a notice of a new foreclosure auction.
 
-Property Address: 123 Main St, Anytown, USA 12345
-Auction Date: October 26, 2023
-Auction Time: 10:00 AM
-Case No.: 2023-123456
+Property Address: Sta. Barbara Iba, Zambales
+Auction Date: August 10, 2025
+Auction Time: 1:00 AM
+Case No.: 2025-78910
 
 Attorney for Plaintiff: Smith & Jones Law Firm
 Attorney Phone: (123) 456-7890
