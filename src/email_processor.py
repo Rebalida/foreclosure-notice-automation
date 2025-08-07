@@ -46,23 +46,67 @@ class EmailProcessor:
         try:
             message = self.service.users().messages().get(userId='me', id=msg_id, format='full').execute()
             payload = message.get('payload', {})
+            
+            # Function to extract text from a part
+            def extract_text_from_part(part):
+                mime_type = part.get('mimeType', '')
+                body = part.get('body', {})
+                
+                if 'data' in body:
+                    data = body['data']
+                    try:
+                        decoded_data = base64.urlsafe_b64decode(data.encode('ASCII')).decode('utf-8')
+                        # If it's HTML, strip HTML tags (basic cleanup)
+                        if mime_type == 'text/html':
+                            import re
+                            # Remove HTML tags and decode HTML entities
+                            decoded_data = re.sub(r'<[^>]+>', '', decoded_data)
+                            decoded_data = decoded_data.replace('&nbsp;', ' ').replace('&amp;', '&')
+                        return decoded_data
+                    except Exception as e:
+                        logging.warning(f"Failed to decode part with mime type {mime_type}: {e}")
+                        return ""
+                return ""
+            
+            # Try to get text content in order of preference
+            content = ""
+            
+            # Check if payload has parts (multipart email)
             parts = payload.get('parts', [])
-            
-            # Find the plain text part of the email
-            for part in parts:
-                if part['mimeType'] == 'text/plain':
-                    data = part['body']['data']
-                    # Decode from base64url
-                    decoded_data = base64.urlsafe_b64decode(data.encode('ASCII')).decode('utf-8')
-                    return decoded_data
-            
-            # Fallback for simple emails with no parts
-            if 'data' in payload.get('body', {}):
-                data = payload['body']['data']
-                decoded_data = base64.urlsafe_b64decode(data.encode('ASCII')).decode('utf-8')
-                return decoded_data
+            if parts:
+                # Look for text/plain first, then text/html
+                for part in parts:
+                    mime_type = part.get('mimeType', '')
+                    if mime_type == 'text/plain':
+                        content = extract_text_from_part(part)
+                        if content:
+                            return content
+                
+                # If no text/plain found, try text/html
+                for part in parts:
+                    mime_type = part.get('mimeType', '')
+                    if mime_type == 'text/html':
+                        content = extract_text_from_part(part)
+                        if content:
+                            return content
+                
+                # Handle nested multipart (multipart/alternative, etc.)
+                for part in parts:
+                    if part.get('mimeType', '').startswith('multipart/'):
+                        nested_parts = part.get('parts', [])
+                        for nested_part in nested_parts:
+                            nested_mime = nested_part.get('mimeType', '')
+                            if nested_mime in ['text/plain', 'text/html']:
+                                content = extract_text_from_part(nested_part)
+                                if content:
+                                    return content
+            else:
+                # Single part email (no parts array)
+                content = extract_text_from_part(payload)
+                if content:
+                    return content
 
-            logging.warning(f"Could not find text/plain part for message ID: {msg_id}")
+            logging.warning(f"Could not extract readable content from message ID: {msg_id}")
             return ""
 
         except Exception as e:
